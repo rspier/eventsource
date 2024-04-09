@@ -70,13 +70,14 @@ func read(t *testing.T, c net.Conn) []byte {
 
 func startEventStream(t *testing.T, e *testEnv) (net.Conn, []byte) {
 	url := e.server.URL
-	t.Log("open connection")
+	t.Logf("open connection to %s", url)
 	conn, err := net.Dial("tcp", strings.Replace(url, "http://", "", 1))
 	checkError(t, err)
 	t.Log("send GET request to the connection")
-	_, err = conn.Write([]byte("GET / HTTP/1.1\n\n"))
+	_, err = conn.Write([]byte("GET / HTTP/1.1\nHost: localhost\n\n"))
 	checkError(t, err)
 
+	time.Sleep(100 * time.Millisecond)
 	resp := read(t, conn)
 	t.Logf("got response: \n%s", resp)
 	return conn, resp
